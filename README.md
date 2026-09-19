@@ -5,7 +5,7 @@ the ones I'm reading now are stacked on the side table, and the to-read pile has
 Click a book to lift it off the shelf and read its card; put a record on the turntable; watch
 the room drift from afternoon sun to lamplight.
 
-Live: https://my-reading-room.vercel.app
+Live: https://gauravs-reading-room.vercel.app
 
 ## How it works
 
