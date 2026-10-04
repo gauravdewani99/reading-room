@@ -425,6 +425,10 @@
   ],
   "coverId": 10840008
  },
+ "1389596": {
+  "subjects": [],
+  "coverId": 5255766
+ },
  "2195464": {
   "subjects": [
    "Marathon running",
@@ -1154,6 +1158,10 @@
   "subjects": [],
   "coverId": 14541972
  },
+ "199635125": {
+  "subjects": [],
+  "coverId": 15234428
+ },
  "203200544": {
   "subjects": [],
   "coverId": 14671208
@@ -1186,5 +1194,26 @@
    "Contemporary"
   ],
   "coverId": 15110598
+ },
+ "223001257": {
+  "subjects": [
+   "Fiction",
+   "Literary Fiction",
+   "Contemporary",
+   "Family",
+   "Books About Books",
+   "Adult Fiction",
+   "Adult",
+   "Grief"
+  ],
+  "coverId": 15254278
+ },
+ "231387262": {
+  "subjects": [],
+  "coverId": 15247551
+ },
+ "244049226": {
+  "subjects": [],
+  "coverId": null
  }
 }
