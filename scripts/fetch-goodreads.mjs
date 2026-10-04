@@ -1,6 +1,9 @@
 // Builds public/books.json (+ public/covers/*) from Goodreads shelf RSS feeds.
 //   GOODREADS_USER_ID=12345 node scripts/fetch-goodreads.mjs
 //   node scripts/fetch-goodreads.mjs --sample     (no Goodreads account needed)
+// Runs unattended every night (.github/workflows/refresh-books.yml), so it must be safe to repeat:
+// it only rewrites books.json when the library really changed, and it fails loudly rather than
+// publishing an empty or sample shelf when Goodreads does not answer properly.
 import { XMLParser } from 'fast-xml-parser'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -22,7 +25,9 @@ async function fetchShelf(userId, shelf) {
     const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 reading-room' } })
     if (!res.ok) throw new Error(`Goodreads ${shelf} page ${page}: HTTP ${res.status}`)
     const doc = parser.parse(await res.text())
-    let list = doc?.rss?.channel?.item ?? []
+    // a login wall or bot check answers 200 with HTML, which must not be read as "an empty shelf"
+    if (!doc?.rss?.channel) throw new Error(`Goodreads ${shelf} page ${page}: response is not an RSS feed`)
+    let list = doc.rss.channel.item ?? []
     if (!Array.isArray(list)) list = [list]
     const fresh = list.filter((it) => !seen.has(txt(it.book_id)))
     if (fresh.length === 0) break
@@ -45,7 +50,6 @@ function toBook(it, shelf) {
     isbn: txt(it.isbn) || undefined,
     pages: Number(txt(it.num_pages)) || 280,
     rating: Number(txt(it.user_rating)) || 0,
-    avgRating: Number(txt(it.average_rating)) || 0,
     readAt: readAt ? new Date(readAt).toISOString().slice(0, 10) : undefined,
     addedAt: new Date(txt(it.user_date_added) || Date.now()).toISOString().slice(0, 10),
     published: Number(txt(it.book_published)) || undefined,
@@ -170,7 +174,7 @@ async function downloadCover(book, coverId) {
   return null
 }
 
-async function build(books) {
+async function build(books, { prune = false } = {}) {
   await fs.mkdir(COVERS, { recursive: true })
   await loadCache()
   const out = []
@@ -185,6 +189,17 @@ async function build(books) {
     if (!cached) await sleep(250)
   }
   await saveCache()
+  if (prune) {
+    // covers of books that have dropped off the shelves
+    const keep = new Set(out.map((b) => `${b.id}.jpg`))
+    for (const f of await fs.readdir(COVERS)) if (f.endsWith('.jpg') && !keep.has(f)) await fs.unlink(path.join(COVERS, f))
+  }
+  let previous = null
+  try { previous = JSON.parse(await fs.readFile(OUT, 'utf8')).books } catch {}
+  if (JSON.stringify(previous) === JSON.stringify(out)) {
+    console.log(`\nNo changes: ${out.length} books, ${path.relative(process.cwd(), OUT)} left as it is`)
+    return
+  }
   await fs.writeFile(OUT, JSON.stringify({ generatedAt: new Date().toISOString(), books: out }, null, 2))
   console.log(`\nWrote ${out.length} books → ${path.relative(process.cwd(), OUT)}`)
 }
@@ -193,6 +208,7 @@ async function fromGoodreads(userId) {
   const read = (await fetchShelf(userId, 'read')).map((it) => toBook(it, 'read'))
   const current = (await fetchShelf(userId, 'currently-reading')).map((it) => toBook(it, 'current'))
   const toRead = (await fetchShelf(userId, 'to-read')).map((it) => toBook(it, 'to-read'))
+  if (read.length === 0) throw new Error('Goodreads returned no books on the read shelf: is the profile still public?')
   read.sort((a, b) => (b.readAt ?? '').localeCompare(a.readAt ?? ''))
   toRead.sort((a, b) => b.addedAt.localeCompare(a.addedAt))
   return [...read.slice(0, LIMITS.read), ...current.slice(0, LIMITS.current), ...toRead.slice(0, LIMITS['to-read'])]
@@ -200,7 +216,7 @@ async function fromGoodreads(userId) {
 
 // ---- sample data (used until a Goodreads user id is provided) ----
 const S = (shelf, title, author, isbn, pages, genre, rating, readAt) => ({
-  id: isbn, title, author, isbn, pages, rating, avgRating: 4.1, readAt, addedAt: readAt ?? '2026-06-01',
+  id: isbn, title, author, isbn, pages, rating, readAt, addedAt: readAt ?? '2026-06-01',
   shelf, custom: genre, description: '', coverUrl: null,
 })
 const SAMPLE = [
@@ -244,9 +260,11 @@ const SAMPLE = [
 ]
 
 const userId = process.env.GOODREADS_USER_ID
-if (process.argv.includes('--sample') || !userId) {
+const sample = process.argv.includes('--sample')
+if (!sample && !userId && process.env.CI) throw new Error('GOODREADS_USER_ID is not set')
+if (sample || !userId) {
   if (!userId) console.log('No GOODREADS_USER_ID set → building sample library\n')
   await build(SAMPLE)
 } else {
-  await build(await fromGoodreads(userId))
+  await build(await fromGoodreads(userId), { prune: true })
 }

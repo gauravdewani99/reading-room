@@ -34,6 +34,13 @@ GOODREADS_USER_ID=<id> npm run books
 
 `npm run books:sample` writes a small fixture set instead.
 
+## Keeping it current
+
+`.github/workflows/refresh-books.yml` runs the fetch every night at 03:17 UTC (or on demand from
+the Actions tab). It commits only when the shelves actually changed, and Vercel redeploys on that
+push. If Goodreads answers with anything other than a feed, the run fails and the site keeps the
+last good library.
+
 ## Stack
 
 Vite · React 19 · TypeScript · three.js · @react-three/fiber · @react-three/drei · zustand

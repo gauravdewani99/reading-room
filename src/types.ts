@@ -7,7 +7,6 @@ export interface Book {
   isbn?: string
   pages: number
   rating: number
-  avgRating: number
   readAt?: string
   addedAt: string
   published?: number
