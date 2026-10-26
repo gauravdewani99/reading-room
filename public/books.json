@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T18:31:30.437Z",
+  "generatedAt": "2026-10-26T08:49:27.951Z",
   "books": [
     {
       "id": "1389596",
@@ -685,6 +685,18 @@
       "cover": "/covers/63697.jpg"
     },
     {
+      "id": "244049226",
+      "title": "The Great Indian Brain Rot : Love, Lies and Algorithms in Digital India",
+      "author": "Anurag Minus Verma",
+      "isbn": "936131212X",
+      "pages": 280,
+      "rating": 0,
+      "addedAt": "2026-10-25",
+      "shelf": "current",
+      "genre": "Technology",
+      "cover": "/covers/244049226.jpg"
+    },
+    {
       "id": "85686691",
       "title": "The Design of Everyday Things",
       "author": "Donald A. Norman",
@@ -708,19 +720,6 @@
       "shelf": "current",
       "genre": "Art",
       "cover": "/covers/615570.jpg"
-    },
-    {
-      "id": "56269264",
-      "title": "The Dawn of Everything: A New History of Humanity",
-      "author": "David Graeber",
-      "isbn": "0374157359",
-      "pages": 280,
-      "rating": 0,
-      "addedAt": "2025-12-18",
-      "published": 2021,
-      "shelf": "current",
-      "genre": "History",
-      "cover": "/covers/56269264.jpg"
     },
     {
       "id": "223001257",
@@ -747,18 +746,6 @@
       "shelf": "to-read",
       "genre": "Fiction",
       "cover": "/covers/231387262.jpg"
-    },
-    {
-      "id": "244049226",
-      "title": "The Great Indian Brain Rot : Love, Lies and Algorithms in Digital India",
-      "author": "Anurag Minus Verma",
-      "isbn": "936131212X",
-      "pages": 280,
-      "rating": 0,
-      "addedAt": "2026-10-04",
-      "shelf": "to-read",
-      "genre": "Technology",
-      "cover": "/covers/244049226.jpg"
     },
     {
       "id": "241560945",
@@ -846,6 +833,19 @@
       "shelf": "to-read",
       "genre": "Fiction",
       "cover": "/covers/34051011.jpg"
+    },
+    {
+      "id": "222683974",
+      "title": "The Loneliness of Sonia and Sunny",
+      "author": "Kiran Desai",
+      "isbn": "0307700151",
+      "pages": 280,
+      "rating": 0,
+      "addedAt": "2026-01-24",
+      "published": 2025,
+      "shelf": "to-read",
+      "genre": "Romance",
+      "cover": "/covers/222683974.jpg"
     }
   ]
 }
